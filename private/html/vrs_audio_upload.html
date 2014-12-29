@@ -1,0 +1,38 @@
+<!--
+* Name: vrs_upload.html
+* Description: The html that implements the UI for the VrsUpload plugin.
+*
+* This comment block will be removed by the plugin before rendering.
+*
+* Author: Phil Hopper
+* Date:   2015-01-04
+-->
+<script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader">
+        <div class="qq-upload-drop-area-selector qq-upload-drop-area" >
+            <span>Drop files here</span>
+        </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+        <ul id="obsvrs-chapters" style="float: left; padding-right: 4px;" class="qq-upload-list">
+        </ul>
+        <ul id="obsvrs-files" style="overflow: auto;" class="obsvrs-sortable qq-upload-list-selector qq-upload-list">
+            <li class="obsvrs-draggable">
+                <div class="qq-progress-bar-container-selector">
+                    <div class="qq-progress-bar-selector qq-progress-bar"></div>
+                </div>
+                <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                <span class="qq-upload-file-selector qq-upload-file"></span>
+                <span class="qq-upload-size-selector qq-upload-size"></span>
+                <span class="obsvrs-remove qq-upload-cancel-selector qq-upload-cancel" title="Remove">&#x2717;</span>
+                <span class="qq-upload-status-text-selector qq-upload-status-text"></span>
+            </li>
+        </ul>
+    </div>
+</script>
+<div id="obsvrs-selectButton"><button>Select Files</button></div>
+<div><button id="obsvrs-uploadButton">Upload Files</button></div>
+<p>----</p>
+<div id="obs-fine-uploader"></div>

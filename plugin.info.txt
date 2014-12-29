@@ -1,0 +1,7 @@
+base   door43obsvrs
+author unfoldingWord.org
+email  https://unfoldingword.org/contact/
+date   2014-12-19
+name   door43obsvrs plugin
+desc   Open Bible Stories support
+url    https://github.com/phillip-hopper/dokuwiki-plugin-obs-vrs
