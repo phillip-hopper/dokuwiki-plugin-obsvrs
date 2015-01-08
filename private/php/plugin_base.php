@@ -127,6 +127,8 @@ class Door43obsvrs_Plugin_Base extends DokuWiki_Syntax_Plugin {
         // remove the initial doc comments
         $text = preg_replace('/^\<!--(.|\n)*--\>(\n)?/', '', $text, 1);
 
+        $text = $this->translateHtml($text);
+
         /* TODO: I'm not sure if this will be needed.
         // Set the label text.
         // If the "special" tag was found, use the default text.
@@ -144,5 +146,11 @@ class Door43obsvrs_Plugin_Base extends DokuWiki_Syntax_Plugin {
         }
 
         return $text;
+    }
+
+    protected function translateHtml($html) {
+        return preg_replace_callback('/@(.+)@/',
+            function($matches) { return $this->getLang($matches[1]); },
+            $html);
     }
 }

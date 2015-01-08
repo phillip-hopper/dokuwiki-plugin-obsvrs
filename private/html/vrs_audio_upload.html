@@ -10,10 +10,10 @@
 <script type="text/template" id="qq-template">
     <div class="qq-uploader-selector qq-uploader">
         <div class="qq-upload-drop-area-selector qq-upload-drop-area" >
-            <span>Drop files here</span>
+            <span>@dropFilesHere@</span>
         </div>
             <span class="qq-drop-processing-selector qq-drop-processing">
-                <span>Processing dropped files...</span>
+                <span>@processingFiles@</span>
                 <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
             </span>
         <ul id="obsvrs-chapters" style="float: left; padding-right: 4px;" class="qq-upload-list">
@@ -32,7 +32,6 @@
         </ul>
     </div>
 </script>
-<div id="obsvrs-selectButton"><button>Select Files</button></div>
-<div><button id="obsvrs-uploadButton">Upload Files</button></div>
-<p>----</p>
-<div id="obs-fine-uploader"></div>
+<div id="obsvrs-selectButton"><button>@selectFiles@</button></div>
+<div style="margin-top: 8px;"><button id="obsvrs-uploadButton">@uploadFiles@</button></div>
+<div style="margin-top: 8px;" id="obs-fine-uploader"></div>

@@ -11,5 +11,11 @@
 // $lang['menu'] = 'Your menu entry';
 
 // custom language strings for the plugin
-//$lang['sourceLabel'] = 'Source Language';
-//$lang['obsDestinationDirExists'] = 'Open Bible Stories is already setup! See <a href="%1$s">%2$s</a>.';
+$lang['selectFiles'] = 'Select Files';
+$lang['uploadFiles'] = 'Upload Files';
+$lang['dropFilesHere'] = 'Drop files here';
+$lang['processingFiles'] = 'Processing dropped files...';
+
+// localized strings for JavaScript
+// js example: var text = LANG.plugins.pluginName['key'];
+//$lang['js']['key'] = 'translation';
