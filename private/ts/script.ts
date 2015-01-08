@@ -1,10 +1,11 @@
 /// <reference path="d/jquery.d.ts" />
 /// <reference path="d/jqueryui.d.ts" />
 /// <reference path="d/jquery.fineuploader.d.ts" />
+/// <reference path="d/interfaces.d.ts" />
 
 /* DOKUWIKI:include_once /lib/scripts/jquery/jquery.min.js */
 /* DOKUWIKI:include_once /lib/scripts/jquery/jquery-ui.min.js */
-/* DOKUWIKI:include_once private/lib/fineuploader/jquery.fineuploader.min.js */
+/* DOKUWIKI:include_once private/lib/fineuploader/s3.jquery.fineuploader.min.js */
 
 /**
  * Name: script.ts
@@ -27,10 +28,40 @@ class Door43FileUploader {
 
         var self: Door43FileUploader = this;
 
-        self.uploader = jQuery('#obs-fine-uploader').fineUploader({
+        self.getBucketConfig(self);
+    }
+
+    private getBucketConfig(self: Door43FileUploader): void {
+
+        var url = DOKU_BASE + 'lib/exe/ajax.php';
+
+        var dataValues = {
+            call: 'obsvrs_bucket_config_request'
+        };
+
+        var ajaxSettings = {
+            type: 'POST',
+            url: url,
+            data: dataValues
+        };
+
+        jQuery.ajax(ajaxSettings).done(function (data) {
+            self.initUploader(self, data);
+        });
+    }
+
+    private initUploader(self: Door43FileUploader, bucketInfo: BucketInfo): void {
+
+        var sigEndpoint: string = DOKU_BASE + 'doku.php?do=obsvrs_signature_request';
+
+        self.uploader = jQuery('#obs-fine-uploader').fineUploaderS3({
             debug: false,
             request: {
-                endpoint: "http://localhost/file-upload/receive.php"
+                endpoint: bucketInfo.endPoint,
+                accessKey: bucketInfo.accessKey
+            },
+            signature: {
+                endpoint: sigEndpoint
             },
             template: "qq-template",
             autoUpload: false,
@@ -61,7 +92,7 @@ class Door43FileUploader {
         Door43FileUploader.initializeChapters();
     }
 
-    static  uploadNow(self: Door43FileUploader): void {
+    static uploadNow(self: Door43FileUploader): void {
 
         var ulFiles: JQuery = jQuery('#obsvrs-files');
         var allItems: JQuery = ulFiles.find('li');
@@ -73,17 +104,18 @@ class Door43FileUploader {
             var chapterId: number = allItems.index(items[i]) + 1;
             var fileId: number = parseInt(items[i].getAttribute('qq-file-id'));
 
-            var file: Object = self.uploader.fineUploader('getUploads', { id: fileId });
+            var file: Object = self.uploader.fineUploaderS3('getUploads', { id: fileId });
             var ext: string = (<string>file['name']).substring(file['name'].lastIndexOf('.'));
             file['name'] = batch + '_chapter_' + Door43FileUploader.formatChapterNumber(chapterId) + ext;
         }
 
-        self.uploader.fineUploader('uploadStoredFiles');
+        self.uploader.fineUploaderS3('uploadStoredFiles');
     }
 
     static formatChapterNumber(chapterNum: number): string {
         return ('00' + chapterNum.toString()).slice(-2);
     }
+
     static initializeChapters(): void {
 
         var ul = jQuery('#obsvrs-chapters');
@@ -144,7 +176,6 @@ class Door43FileUploader {
             ulFiles.append('<li class="obsvrs-placeholder">&nbsp;</li>')
         }
     }
-
 
     private static removeListItems(ul: JQuery, selector: string, numberToRemove: number): void {
 

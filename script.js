@@ -1,9 +1,10 @@
 /// <reference path="d/jquery.d.ts" />
 /// <reference path="d/jqueryui.d.ts" />
 /// <reference path="d/jquery.fineuploader.d.ts" />
+/// <reference path="d/interfaces.d.ts" />
 /* DOKUWIKI:include_once /lib/scripts/jquery/jquery.min.js */
 /* DOKUWIKI:include_once /lib/scripts/jquery/jquery-ui.min.js */
-/* DOKUWIKI:include_once private/lib/fineuploader/jquery.fineuploader.min.js */
+/* DOKUWIKI:include_once private/lib/fineuploader/s3.jquery.fineuploader.min.js */
 /**
  * Name: script.ts
  * Description: Script to support OBS audio upload
@@ -18,10 +19,32 @@ var Door43FileUploader = (function () {
     function Door43FileUploader() {
         this.sortTimer = 0;
         var self = this;
-        self.uploader = jQuery('#obs-fine-uploader').fineUploader({
+        self.getBucketConfig(self);
+    }
+    Door43FileUploader.prototype.getBucketConfig = function (self) {
+        var url = DOKU_BASE + 'lib/exe/ajax.php';
+        var dataValues = {
+            call: 'obsvrs_bucket_config_request'
+        };
+        var ajaxSettings = {
+            type: 'POST',
+            url: url,
+            data: dataValues
+        };
+        jQuery.ajax(ajaxSettings).done(function (data) {
+            self.initUploader(self, data);
+        });
+    };
+    Door43FileUploader.prototype.initUploader = function (self, bucketInfo) {
+        var sigEndpoint = DOKU_BASE + 'doku.php?do=obsvrs_signature_request';
+        self.uploader = jQuery('#obs-fine-uploader').fineUploaderS3({
             debug: false,
             request: {
-                endpoint: "http://localhost/file-upload/receive.php"
+                endpoint: bucketInfo.endPoint,
+                accessKey: bucketInfo.accessKey
+            },
+            signature: {
+                endpoint: sigEndpoint
             },
             template: "qq-template",
             autoUpload: false,
@@ -49,7 +72,7 @@ var Door43FileUploader = (function () {
             Door43FileUploader.uploadNow(self);
         });
         Door43FileUploader.initializeChapters();
-    }
+    };
     Door43FileUploader.uploadNow = function (self) {
         var ulFiles = jQuery('#obsvrs-files');
         var allItems = ulFiles.find('li');
@@ -58,11 +81,11 @@ var Door43FileUploader = (function () {
         for (var i = 0; i < items.length; i++) {
             var chapterId = allItems.index(items[i]) + 1;
             var fileId = parseInt(items[i].getAttribute('qq-file-id'));
-            var file = self.uploader.fineUploader('getUploads', { id: fileId });
+            var file = self.uploader.fineUploaderS3('getUploads', { id: fileId });
             var ext = file['name'].substring(file['name'].lastIndexOf('.'));
             file['name'] = batch + '_chapter_' + Door43FileUploader.formatChapterNumber(chapterId) + ext;
         }
-        self.uploader.fineUploader('uploadStoredFiles');
+        self.uploader.fineUploaderS3('uploadStoredFiles');
     };
     Door43FileUploader.formatChapterNumber = function (chapterNum) {
         return ('00' + chapterNum.toString()).slice(-2);

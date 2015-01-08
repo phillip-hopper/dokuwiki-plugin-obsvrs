@@ -232,13 +232,17 @@ INPUT.qq-edit-filename.qq-editing ~ .qq-upload-cancel { display: none; }
 
                 &.qq-upload-fail {
                     background-color: @fail-background;
+                    border-color: @fail-background;
                     color: @fail-text;
                 }
 
                 &.qq-upload-success {
                     background-color: @success-background;
+                    border-color: @success-background;
                     color: @success-text;
                 }
+
+                .qq-upload-file { display: inline; }
             }
 
             &.obsvrs-placeholder {

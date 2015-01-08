@@ -3,6 +3,8 @@
 interface JQuery {
 	fineUploader(fnName: string, parameters?: Object): any;
 	fineUploader(options: Object): JQuery;
+	fineUploaderS3(fnName: string, parameters?: Object): any;
+	fineUploaderS3(options: Object): JQuery;
 }
 
 interface qqStatus {
