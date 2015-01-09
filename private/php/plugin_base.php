@@ -150,7 +150,10 @@ class Door43obsvrs_Plugin_Base extends DokuWiki_Syntax_Plugin {
 
     protected function translateHtml($html) {
         return preg_replace_callback('/@(.+)@/',
-            function($matches) { return $this->getLang($matches[1]); },
+            function($matches) {
+                $text = $this->getLang($matches[1]);
+                return (empty($text)) ? $matches[0] : $text;
+            },
             $html);
     }
 }

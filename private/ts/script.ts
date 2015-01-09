@@ -5,7 +5,7 @@
 
 /* DOKUWIKI:include_once /lib/scripts/jquery/jquery.min.js */
 /* DOKUWIKI:include_once /lib/scripts/jquery/jquery-ui.min.js */
-/* DOKUWIKI:include_once private/lib/fineuploader/s3.jquery.fineuploader.min.js */
+/* DOKUWIKI:include_once private/lib/fineuploader/s3.jquery.fineuploader.js */
 
 /**
  * Name: script.ts
@@ -106,7 +106,10 @@ class Door43FileUploader {
 
             var file: Object = self.uploader.fineUploaderS3('getUploads', { id: fileId });
             var ext: string = (<string>file['name']).substring(file['name'].lastIndexOf('.'));
-            file['name'] = batch + '_chapter_' + Door43FileUploader.formatChapterNumber(chapterId) + ext;
+            file['uuid'] = batch + '_chapter_' + Door43FileUploader.formatChapterNumber(chapterId);
+            file['name'] = file['uuid'] + ext;
+
+            console.log(file);
         }
 
         self.uploader.fineUploaderS3('uploadStoredFiles');
