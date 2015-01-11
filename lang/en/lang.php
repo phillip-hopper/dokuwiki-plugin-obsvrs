@@ -17,5 +17,9 @@ $lang['dropFilesHere'] = 'Drop files here';
 $lang['processingFiles'] = 'Processing dropped files...';
 
 // localized strings for JavaScript
-// js example: var text = LANG.plugins.pluginName['key'];
-//$lang['js']['key'] = 'translation';
+// js example: var text = LANG.plugins['door43obsvrs']['autoRetryNote'];
+$lang['js']['autoRetryNote'] = 'Retrying {retryNum}/{maxAuto} ...';
+$lang['js']['failUpload'] = 'Upload failed';
+$lang['js']['formatProgress'] = '{percent}% of {total_size}';
+$lang['js']['paused'] = 'Paused';
+$lang['js']['waitingForResponse'] = 'Processing...';

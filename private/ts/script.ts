@@ -56,12 +56,25 @@ class Door43FileUploader {
 
         self.uploader = jQuery('#obs-fine-uploader').fineUploaderS3({
             debug: false,
+            maxConnections: 1,
             request: {
                 endpoint: bucketInfo.endPoint,
                 accessKey: bucketInfo.accessKey
             },
             signature: {
                 endpoint: sigEndpoint
+            },
+            retry: {
+                enableAuto: true,
+                showButton: true,
+                showAutoRetryNote: true,
+                autoRetryNote: LANG.plugins['door43obsvrs']['autoRetryNote']
+            },
+            text : {
+                failUpload: LANG.plugins['door43obsvrs']['failUpload'],
+                formatProgress: LANG.plugins['door43obsvrs']['formatProgress'],
+                paused: LANG.plugins['door43obsvrs']['paused'],
+                waitingForResponse: LANG.plugins['door43obsvrs']['waitingForResponse']
             },
             template: "qq-template",
             autoUpload: false,
@@ -99,6 +112,11 @@ class Door43FileUploader {
         var items: JQuery = ulFiles.find('[qq-file-id]');
         var batch: string = 'batch-' + Date.now().toString();
 
+        // target directory
+        var targetDir: string = 'media/obs-vrs-inbox/';
+        targetDir += NS ? NS : 'unknown';
+        targetDir += '/' + batch + '/';
+
         // set the file name to the name of the chapter (ex. chapter_01.mp3)
         for (var i:number = 0; i < items.length; i++) {
             var chapterId: number = allItems.index(items[i]) + 1;
@@ -106,10 +124,10 @@ class Door43FileUploader {
 
             var file: Object = self.uploader.fineUploaderS3('getUploads', { id: fileId });
             var ext: string = (<string>file['name']).substring(file['name'].lastIndexOf('.'));
-            file['uuid'] = batch + '_chapter_' + Door43FileUploader.formatChapterNumber(chapterId);
+            file['uuid'] = targetDir + 'chapter_' + Door43FileUploader.formatChapterNumber(chapterId);
             file['name'] = file['uuid'] + ext;
 
-            console.log(file);
+            //console.log(file);
         }
 
         self.uploader.fineUploaderS3('uploadStoredFiles');
