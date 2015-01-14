@@ -3,9 +3,7 @@
 /// <reference path="d/jquery.fineuploader.d.ts" />
 /// <reference path="d/interfaces.d.ts" />
 
-/* DOKUWIKI:include_once /lib/scripts/jquery/jquery.js */
-/* DOKUWIKI:include_once /lib/scripts/jquery/jquery-ui.js */
-/* DOKUWIKI:include_once private/lib/fineuploader/s3.jquery.fineuploader.js */
+/* DOKUWIKI:include_once private/fineuploader/s3.jquery.fineuploader.js */
 
 /**
  * Name: script.ts
