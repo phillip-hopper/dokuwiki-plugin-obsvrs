@@ -9,14 +9,14 @@
 -->
 <script type="text/template" id="qq-template">
     <div class="qq-uploader-selector qq-uploader">
-        <div class="qq-upload-drop-area-selector qq-upload-drop-area" >
+        <div style="float: right;" class="qq-upload-drop-area-selector qq-upload-drop-area" >
             <span>@dropFilesHere@</span>
         </div>
-            <span class="qq-drop-processing-selector qq-drop-processing">
-                <span>@processingFiles@</span>
-                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
-            </span>
-        <ul id="obsvrs-chapters" style="float: left; padding-right: 4px;" class="qq-upload-list">
+        <span class="qq-drop-processing-selector qq-drop-processing">
+            <span>@processingFiles@</span>
+            <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+        </span>
+        <ul id="obsvrs-chapters" style="float: left; padding-right: 4px; clear: both;" class="qq-upload-list">
         </ul>
         <ul id="obsvrs-files" style="overflow: auto;" class="obsvrs-sortable qq-upload-list-selector qq-upload-list">
             <li class="obsvrs-draggable">
@@ -32,6 +32,9 @@
         </ul>
     </div>
 </script>
-<div id="obsvrs-selectButton"><button>@selectFiles@</button></div>
-<div style="margin-top: 8px;"><button id="obsvrs-uploadButton">@uploadFiles@</button></div>
+<div style="display: block; box-sizing: border-box; width: 100%; text-align: right;">
+    <div style="margin-bottom: 8px;"><label for="obsvrs-selectLanguageCode">@selectLanguage@</label>&nbsp;<input type="text" id="obsvrs-selectLanguageCode" style="width: 250px;"></div>
+    <div id="obsvrs-selectButton"><button>@selectFiles@</button></div>
+    <div style="margin-top: 8px;"><button id="obsvrs-uploadButton">@uploadFiles@</button></div>
+</div>
 <div style="margin-top: 8px;" id="obs-fine-uploader"></div>

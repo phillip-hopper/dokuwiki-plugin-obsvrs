@@ -14,6 +14,19 @@ interface LocalizedStrings {
     plugins: Object;
 }
 
+interface LanguageDetail {
+    cc: string[];
+    lc: string;
+    ln: string;
+    lr: string;
+}
+
+interface LanguageList {
+    count: number;
+    results: LanguageDetail[];
+
+}
+
 // these variables are defined by Dokuwiki
 declare var DOKU_BASE: string;         // the full webserver path to the DokuWiki installation
 declare var NS: string;                // $INFO['namespace'] passed through the function tpl_metaheaders()

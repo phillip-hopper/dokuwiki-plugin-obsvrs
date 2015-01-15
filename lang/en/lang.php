@@ -15,6 +15,7 @@ $lang['selectFiles'] = 'Select Files';
 $lang['uploadFiles'] = 'Upload Files';
 $lang['dropFilesHere'] = 'Drop files here';
 $lang['processingFiles'] = 'Processing dropped files...';
+$lang['selectLanguage'] = 'Select Language';
 
 // localized strings for JavaScript
 // js example: var text = LANG.plugins['door43obsvrs']['autoRetryNote'];

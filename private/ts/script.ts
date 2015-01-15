@@ -18,6 +18,7 @@ class Door43FileUploader {
     private sorting: JQuery;
 
     private sortTimer: number = 0;
+    private languages: string[] = [];
 
     /**
      * Class constructor
@@ -26,7 +27,39 @@ class Door43FileUploader {
 
         var self: Door43FileUploader = this;
 
+        self.initLanguageList(self);
         self.getBucketConfig(self);
+    }
+
+    private initLanguageList(self: Door43FileUploader): void {
+
+        setTimeout(function() {
+            var request = {type: 'GET', url: 'https://door43.org:9096/?q='};
+
+            jQuery.ajax(request).done(function(data: LanguageList) {
+
+                if (!data.results) return;
+
+                for (var i = 0; i < data.results.length; i++) {
+
+                    var langData: LanguageDetail = data.results[i];
+                    self.languages.push(langData['ln'] + ' (' + langData['lc'] + ')');
+                }
+
+                var langList: JQuery = jQuery('#obsvrs-selectLanguageCode').autocomplete({
+                    source: self.languages
+                });
+
+                if (NS) {
+                    var searchFor: string = '(' + NS + ')';
+                    var match = self.languages.filter(function(element: string){
+                        return (element.indexOf(searchFor) > -1);
+                    });
+
+                    if (match) langList.val(match[0]);
+                }
+            });
+        }, 100);
     }
 
     private getBucketConfig(self: Door43FileUploader): void {
@@ -105,15 +138,23 @@ class Door43FileUploader {
 
     static uploadNow(self: Door43FileUploader): void {
 
+        var langText = (<HTMLInputElement>document.getElementById('obsvrs-selectLanguageCode')).value;
+        if (!langText) return;
+
+        var langCodes = langText.match(/\(([a-z]+)\)/i);
+        if (langCodes.length !== 2) return;
+
+        var userText = jQuery('.user').first().text();
+        var userNames = userText.match(/\((.+)\)/i);
+        if (userNames.length !== 2) return;
+
         var ulFiles: JQuery = jQuery('#obsvrs-files');
         var allItems: JQuery = ulFiles.find('li');
         var items: JQuery = ulFiles.find('[qq-file-id]');
-        var batch: string = 'batch-' + Date.now().toString();
 
         // target directory
-        var targetDir: string = 'media/obs-vrs-inbox/';
-        targetDir += NS ? NS : 'unknown';
-        targetDir += '/' + batch + '/';
+        // requested structure: media/[langCode]/mp3/[door43userName]/[batches]/
+        var targetDir: string = 'media/' + langCodes[1] + '/mp3/' + userNames[1] + '/batches/' + Date.now().toString() + '/';
 
         // set the file name to the name of the chapter (ex. chapter_01.mp3)
         for (var i:number = 0; i < items.length; i++) {
@@ -122,10 +163,8 @@ class Door43FileUploader {
 
             var file: Object = self.uploader.fineUploaderS3('getUploads', { id: fileId });
             var ext: string = (<string>file['name']).substring(file['name'].lastIndexOf('.'));
-            file['uuid'] = targetDir + 'chapter_' + Door43FileUploader.formatChapterNumber(chapterId);
+            file['uuid'] = targetDir + Door43FileUploader.formatChapterNumber(chapterId);
             file['name'] = file['uuid'] + ext;
-
-            //console.log(file);
         }
 
         self.uploader.fineUploaderS3('uploadStoredFiles');
