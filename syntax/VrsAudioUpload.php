@@ -18,4 +18,26 @@ class syntax_plugin_door43obsvrs_VrsAudioUpload extends Door43obsvrs_Plugin_Base
     function __construct() {
         parent::__construct('VrsAudioUpload', 'obsvrsaudioupload', 'vrs_audio_upload.html');
     }
+
+    protected function getTextToRender($match) {
+
+        $html = '<label for="obsvrs-selectLanguageCode">@selectLanguage@</label>&nbsp;';
+
+        /* @var $translation helper_plugin_translation */
+        $translation = plugin_load('helper','translation');
+        $html .= $translation->renderAutoCompleteTextBox('obsvrs-selectLanguageCode', 'obsvrs-selectLanguageCode', 'width: 250px;');
+
+        // Set the label text.
+        // If the "special" tag was found, use the default text.
+        if (preg_match('/' . str_replace('/', '\/', $this->specialMatch) . '/', $match))
+            $html = $this->translateHtml($html);
+
+        // If you are here, the "match" was the un-matched segment between the entry and exit tags,
+        // which should be the desired label text.
+        $html = str_replace('@destinationLabel@', $match, $html);
+
+        $returnVal = parent::getTextToRender($match);
+
+        return str_replace('<!-- insert language selector here -->', $html, $returnVal);
+    }
 }
