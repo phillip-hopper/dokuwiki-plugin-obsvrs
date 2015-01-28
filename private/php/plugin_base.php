@@ -119,31 +119,16 @@ class Door43obsvrs_Plugin_Base extends DokuWiki_Syntax_Plugin {
         return true;
     }
 
-    protected function getTextToRender($match) {
+    protected function getTextToRender(/** @noinspection PhpUnusedParameterInspection */
+        $match) {
 
         // Load the template for the button
         $text = file_get_contents($this->root . '/html/' . $this->templateFileName);
 
         // remove the initial doc comments
-        $text = preg_replace('/^\<!--(.|\n)*--\>(\n)?/', '', $text, 1);
+        $text = preg_replace('/^\<!--(.|\n)*--\>(\n)/', '', $text, 1);
 
         $text = $this->translateHtml($text);
-
-        /* TODO: I'm not sure if this will be needed.
-        // Set the label text.
-        // If the "special" tag was found, use the default text.
-        if (preg_match('/' . str_replace('/', '\/', $this->specialMatch) . '/', $match))
-            return str_replace('@LabelText@', $this->getLang($this->langStringKey), $text);
-
-        // If you are here, the "match" was the un-matched segment between the entry and exit tags,
-        // which should be the desired label text.
-        return str_replace('@LabelText@', $match, $text);
-        */
-
-        // TODO: This is just to stop PhpStorm from complaining about the unused parameter for now.
-        if (false) {
-            return $match;
-        }
 
         return $text;
     }
