@@ -2,7 +2,7 @@
 /// <reference path="d/jqueryui.d.ts" />
 /// <reference path="d/jquery.fineuploader.d.ts" />
 /// <reference path="d/interfaces.d.ts" />
-/* DOKUWIKI:include_once private/fineuploader/s3.jquery.fineuploader.js */
+/* DOKUWIKI:include_once private/fineuploader/s3.jquery.fine-uploader.js */
 /**
  * Name: script.ts
  * Description: Script to support OBS audio upload
@@ -16,34 +16,29 @@ var Door43FileUploader = (function () {
      */
     function Door43FileUploader() {
         this.sortTimer = 0;
-        this.languages = [];
         var self = this;
-        self.initLanguageList(self);
-        self.getBucketConfig(self);
+        self.getUserInfo(self);
     }
-    Door43FileUploader.prototype.initLanguageList = function (self) {
-        setTimeout(function () {
-            var request = { type: 'GET', url: 'https://door43.org:9096/?q=' };
-            jQuery.ajax(request).done(function (data) {
-                if (!data.results)
-                    return;
-                for (var i = 0; i < data.results.length; i++) {
-                    var langData = data.results[i];
-                    self.languages.push(langData['ln'] + ' (' + langData['lc'] + ')');
-                }
-                var langList = jQuery('#obsvrs-selectLanguageCode').autocomplete({
-                    source: self.languages
-                });
-                if (NS) {
-                    var searchFor = '(' + NS + ')';
-                    var match = self.languages.filter(function (element) {
-                        return (element.indexOf(searchFor) > -1);
-                    });
-                    if (match)
-                        langList.val(match[0]);
-                }
-            });
-        }, 100);
+    Door43FileUploader.prototype.getUserInfo = function (self) {
+        var url = DOKU_BASE + 'lib/exe/ajax.php';
+        var dataValues = {
+            call: 'obsvrs_user_info_request'
+        };
+        var ajaxSettings = {
+            type: 'POST',
+            url: url,
+            data: dataValues
+        };
+        jQuery.ajax(ajaxSettings).done(function (data) {
+            if (!data['name']) {
+                jQuery('.obsvrs-not-logged-in').css('display', 'block');
+            }
+            else {
+                self.userName = data['name'];
+                jQuery('.obsvrs-logged-in').css('display', 'block');
+                self.getBucketConfig(self);
+            }
+        });
     };
     Door43FileUploader.prototype.getBucketConfig = function (self) {
         var url = DOKU_BASE + 'lib/exe/ajax.php';
@@ -121,30 +116,61 @@ var Door43FileUploader = (function () {
         var userNames = userText.match(/\((.+)\)/i);
         if (userNames.length !== 2)
             return;
+        var chapterVerses = jQuery('#obsvrs-select-chapter').val();
+        if (!chapterVerses)
+            return;
+        var chapter = chapterVerses.split(':')[0];
         var ulFiles = jQuery('#obsvrs-files');
         var allItems = ulFiles.find('li');
         var items = ulFiles.find('[qq-file-id]');
         // target directory
-        // requested structure: media/[langCode]/mp3/[door43userName]/[batches]/
-        var targetDir = 'media/' + langCodes[1] + '/mp3/' + userNames[1] + '/batches/' + Date.now().toString() + '/';
+        // requested structure: media/[langCode]/mp3/[door43userName]/[batches]/chapter_01/
+        var targetDir = 'media/' + langCodes[1] + '/mp3/' + userNames[1] + '/' + Date.now().toString() + '/chapter_' + chapter + '/';
         for (var i = 0; i < items.length; i++) {
-            var chapterId = allItems.index(items[i]) + 1;
+            var pageId = allItems.index(items[i]) + 1;
             var fileId = parseInt(items[i].getAttribute('qq-file-id'));
             var file = self.uploader.fineUploaderS3('getUploads', { id: fileId });
             var ext = file['name'].substring(file['name'].lastIndexOf('.'));
-            file['uuid'] = targetDir + Door43FileUploader.formatChapterNumber(chapterId);
+            file['uuid'] = targetDir + Door43FileUploader.formatPageNumber(pageId);
             file['name'] = file['uuid'] + ext;
         }
         self.uploader.fineUploaderS3('uploadStoredFiles');
     };
-    Door43FileUploader.formatChapterNumber = function (chapterNum) {
-        return ('00' + chapterNum.toString()).slice(-2);
+    Door43FileUploader.formatPageNumber = function (pageNum) {
+        return ('00' + pageNum.toString()).slice(-2);
     };
     Door43FileUploader.initializeChapters = function () {
-        var ul = jQuery('#obsvrs-chapters');
-        for (var i = 1; i < 51; i++) {
-            ul.append('<li>' + Door43FileUploader.formatChapterNumber(i) + '</li>');
+        // We need to get the data from the plugin because of browser Cross-Origin restrictions.
+        var url = DOKU_BASE + 'lib/exe/ajax.php';
+        var dataValues = {
+            call: 'obs_cross_origin_json_request',
+            contentType: 'application/json',
+            requestUrl: 'https://api.unfoldingword.org/obs/txt/1/en/obs-en.json'
+        };
+        var ajaxSettings = {
+            type: 'POST',
+            url: url,
+            data: dataValues
+        };
+        jQuery.ajax(ajaxSettings).done(function (data) {
+            var select = jQuery('#obsvrs-select-chapter');
+            for (var i = 0; i < data.chapters.length; i++) {
+                var chapter = data.chapters[i];
+                select.append('<option value="' + chapter.number + ':' + chapter.frames.length + '">' + chapter.title + '</option>');
+            }
+            select.on('change', function () {
+                Door43FileUploader.showChapters(this.value);
+            });
+        });
+    };
+    Door43FileUploader.showChapters = function (chapterData) {
+        var values = chapterData.split(':');
+        var ul = jQuery('#obsvrs-pages');
+        ul.empty();
+        for (var i = 1; i < parseInt(values[1]); i++) {
+            ul.append('<li>' + Door43FileUploader.formatPageNumber(i) + '</li>');
         }
+        Door43FileUploader.padFileList();
     };
     Door43FileUploader.prototype.delayPadFileList = function () {
         if (this.sortTimer) {
@@ -153,32 +179,33 @@ var Door43FileUploader = (function () {
         }
         this.sortTimer = setTimeout(function () {
             Door43FileUploader.padFileList();
-        }, 100);
+        }, 1);
     };
     /**
      * Ensures the file list is the same length as the chapter list
      */
     Door43FileUploader.padFileList = function () {
         var ulFiles = jQuery('#obsvrs-files');
-        var ulChapters = jQuery('#obsvrs-chapters');
-        var numChapters = ulChapters.children('li').length;
+        var ulPages = jQuery('#obsvrs-pages');
+        var numPages = ulPages.children('li').length;
         var numFiles = ulFiles.children('li').length;
         var numPlaceHolders = ulFiles.children('li.obsvrs-placeholder').length;
-        if (numChapters > numFiles) {
+        if (numPages > numFiles) {
             // add more place holders
-            Door43FileUploader.addPlaceHolders(ulFiles, numChapters - numFiles);
+            Door43FileUploader.addPlaceHolders(ulFiles, numPages - numFiles);
         }
-        else if (numFiles > numChapters) {
+        else if (numFiles > numPages) {
             // remove place holders and/or files
-            var toRemove = numFiles - numChapters;
+            var toRemove = numFiles - numPages;
             var placeHoldersToRemove = (numPlaceHolders > toRemove) ? toRemove : numPlaceHolders;
             toRemove -= placeHoldersToRemove;
             var filesToRemove = (toRemove > 0) ? toRemove : 0;
             if (placeHoldersToRemove > 0)
-                Door43FileUploader.replacePlaceHolders(ulFiles, 'li.obsvrs-placeholder', placeHoldersToRemove, 50);
+                Door43FileUploader.replacePlaceHolders(ulFiles, 'li.obsvrs-placeholder', numPages);
             if (filesToRemove > 0)
                 Door43FileUploader.removeListItems(ulFiles, 'li.obsvrs-draggable', filesToRemove);
         }
+        jQuery('#obsvrs-page-list-div').height(ulPages.height());
     };
     Door43FileUploader.addPlaceHolders = function (ulFiles, numberToAdd) {
         for (var i = 0; i < numberToAdd; i++) {
@@ -192,14 +219,10 @@ var Door43FileUploader = (function () {
             jQuery(items[index]).remove();
         }
     };
-    Door43FileUploader.replacePlaceHolders = function (ul, placeHolderSelector, numberToReplace, finalListLength) {
+    Door43FileUploader.replacePlaceHolders = function (ul, placeHolderSelector, finalListLength) {
         var placeHolders = ul.children(placeHolderSelector);
-        for (var count = 0; count < numberToReplace; count++) {
-            var file = ul.find('li').eq(finalListLength);
-            var placeHolder = jQuery(placeHolders[count]);
-            file.insertBefore(placeHolder);
-            placeHolder.remove();
-        }
+        placeHolders.remove();
+        Door43FileUploader.addPlaceHolders(ul, finalListLength - ul.children().length);
     };
     return Door43FileUploader;
 })();

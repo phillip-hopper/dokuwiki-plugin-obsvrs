@@ -3,7 +3,7 @@
 /// <reference path="d/jquery.fineuploader.d.ts" />
 /// <reference path="d/interfaces.d.ts" />
 
-/* DOKUWIKI:include_once private/fineuploader/s3.jquery.fineuploader.js */
+/* DOKUWIKI:include_once private/fineuploader/s3.jquery.fine-uploader.js */
 
 /**
  * Name: script.ts
@@ -18,7 +18,7 @@ class Door43FileUploader {
     private sorting: JQuery;
 
     private sortTimer: number = 0;
-    private languages: string[] = [];
+    private userName: string;
 
     /**
      * Class constructor
@@ -27,39 +27,33 @@ class Door43FileUploader {
 
         var self: Door43FileUploader = this;
 
-        self.initLanguageList(self);
-        self.getBucketConfig(self);
+        self.getUserInfo(self);
     }
 
-    private initLanguageList(self: Door43FileUploader): void {
+    private getUserInfo(self: Door43FileUploader): void {
 
-        setTimeout(function() {
-            var request = {type: 'GET', url: 'https://door43.org:9096/?q='};
+        var url = DOKU_BASE + 'lib/exe/ajax.php';
 
-            jQuery.ajax(request).done(function(data: LanguageList) {
+        var dataValues = {
+            call: 'obsvrs_user_info_request'
+        };
 
-                if (!data.results) return;
+        var ajaxSettings = {
+            type: 'POST',
+            url: url,
+            data: dataValues
+        };
 
-                for (var i = 0; i < data.results.length; i++) {
-
-                    var langData: LanguageDetail = data.results[i];
-                    self.languages.push(langData['ln'] + ' (' + langData['lc'] + ')');
-                }
-
-                var langList: JQuery = jQuery('#obsvrs-selectLanguageCode').autocomplete({
-                    source: self.languages
-                });
-
-                if (NS) {
-                    var searchFor: string = '(' + NS + ')';
-                    var match = self.languages.filter(function(element: string){
-                        return (element.indexOf(searchFor) > -1);
-                    });
-
-                    if (match) langList.val(match[0]);
-                }
-            });
-        }, 100);
+        jQuery.ajax(ajaxSettings).done(function (data) {
+            if (!data['name']) {
+                jQuery('.obsvrs-not-logged-in').css('display', 'block');
+            }
+            else {
+                self.userName = data['name'];
+                jQuery('.obsvrs-logged-in').css('display', 'block');
+                self.getBucketConfig(self);
+            }
+        });
     }
 
     private getBucketConfig(self: Door43FileUploader): void {
@@ -148,39 +142,77 @@ class Door43FileUploader {
         var userNames = userText.match(/\((.+)\)/i);
         if (userNames.length !== 2) return;
 
+        var chapterVerses: string = jQuery('#obsvrs-select-chapter').val();
+        if (!chapterVerses) return;
+        var chapter: string = chapterVerses.split(':')[0];
+
         var ulFiles: JQuery = jQuery('#obsvrs-files');
         var allItems: JQuery = ulFiles.find('li');
         var items: JQuery = ulFiles.find('[qq-file-id]');
 
         // target directory
-        // requested structure: media/[langCode]/mp3/[door43userName]/[batches]/
-        var targetDir: string = 'media/' + langCodes[1] + '/mp3/' + userNames[1] + '/batches/' + Date.now().toString() + '/';
+        // requested structure: media/[langCode]/mp3/[door43userName]/[batches]/chapter_01/
+        var targetDir: string = 'media/' + langCodes[1] + '/mp3/' + userNames[1] + '/' + Date.now().toString() + '/chapter_' + chapter + '/';
 
-        // set the file name to the name of the chapter (ex. chapter_01.mp3)
+        // set the file name to the page number (ex. 01.mp3)
         for (var i:number = 0; i < items.length; i++) {
-            var chapterId: number = allItems.index(items[i]) + 1;
+            var pageId: number = allItems.index(items[i]) + 1;
             var fileId: number = parseInt(items[i].getAttribute('qq-file-id'));
 
             var file: Object = self.uploader.fineUploaderS3('getUploads', { id: fileId });
             var ext: string = (<string>file['name']).substring(file['name'].lastIndexOf('.'));
-            file['uuid'] = targetDir + Door43FileUploader.formatChapterNumber(chapterId);
+            file['uuid'] = targetDir + Door43FileUploader.formatPageNumber(pageId);
             file['name'] = file['uuid'] + ext;
         }
 
         self.uploader.fineUploaderS3('uploadStoredFiles');
     }
 
-    static formatChapterNumber(chapterNum: number): string {
-        return ('00' + chapterNum.toString()).slice(-2);
+    static formatPageNumber(pageNum: number): string {
+        return ('00' + pageNum.toString()).slice(-2);
     }
 
     static initializeChapters(): void {
 
-        var ul = jQuery('#obsvrs-chapters');
+        // We need to get the data from the plugin because of browser Cross-Origin restrictions.
+        var url = DOKU_BASE + 'lib/exe/ajax.php';
 
-        for (var i = 1; i < 51; i++) {
-            ul.append('<li>' + Door43FileUploader.formatChapterNumber(i) + '</li>')
+        var dataValues = {
+            call: 'obs_cross_origin_json_request',
+            contentType: 'application/json',
+            requestUrl: 'https://api.unfoldingword.org/obs/txt/1/en/obs-en.json'
+        };
+
+        var ajaxSettings = {
+            type: 'POST',
+            url: url,
+            data: dataValues
+        };
+
+        jQuery.ajax(ajaxSettings).done(function (data: ObsChapterData) {
+
+            var select = jQuery('#obsvrs-select-chapter');
+            for (var i = 0; i < data.chapters.length; i++) {
+
+                var chapter: ObsChapter = data.chapters[i];
+                select.append('<option value="' + chapter.number + ':' + chapter.frames.length + '">' + chapter.title + '</option>');
+            }
+
+            select.on('change', function() { Door43FileUploader.showChapters(this.value); })
+        });
+    }
+
+    static showChapters(chapterData: string) {
+
+        var values = chapterData.split(':');
+        var ul = jQuery('#obsvrs-pages');
+        ul.empty();
+
+        for (var i = 1; i < parseInt(values[1]); i++) {
+            ul.append('<li>' + Door43FileUploader.formatPageNumber(i) + '</li>')
         }
+
+        Door43FileUploader.padFileList();
     }
 
     public delayPadFileList(): void {
@@ -192,7 +224,7 @@ class Door43FileUploader {
 
         this.sortTimer = setTimeout(function() {
             Door43FileUploader.padFileList();
-        }, 100);
+        }, 1);
     }
 
     /**
@@ -201,31 +233,33 @@ class Door43FileUploader {
     public static padFileList(): void {
 
         var ulFiles: JQuery = jQuery('#obsvrs-files');
-        var ulChapters: JQuery = jQuery('#obsvrs-chapters');
+        var ulPages: JQuery = jQuery('#obsvrs-pages');
 
-        var numChapters: number = ulChapters.children('li').length;
+        var numPages: number = ulPages.children('li').length;
         var numFiles: number = ulFiles.children('li').length;
         var numPlaceHolders: number = ulFiles.children('li.obsvrs-placeholder').length;
 
-        if (numChapters > numFiles) {
+        if (numPages > numFiles) {
 
             // add more place holders
-            Door43FileUploader.addPlaceHolders(ulFiles, numChapters - numFiles);
+            Door43FileUploader.addPlaceHolders(ulFiles, numPages - numFiles);
         }
-        else if (numFiles > numChapters) {
+        else if (numFiles > numPages) {
 
             // remove place holders and/or files
-            var toRemove: number = numFiles - numChapters;
+            var toRemove: number = numFiles - numPages;
             var placeHoldersToRemove = (numPlaceHolders > toRemove) ? toRemove : numPlaceHolders;
             toRemove -= placeHoldersToRemove;
             var filesToRemove = (toRemove > 0) ? toRemove : 0;
 
             if (placeHoldersToRemove > 0)
-                Door43FileUploader.replacePlaceHolders(ulFiles, 'li.obsvrs-placeholder', placeHoldersToRemove, 50);
+                Door43FileUploader.replacePlaceHolders(ulFiles, 'li.obsvrs-placeholder', numPages);
 
             if (filesToRemove > 0)
                 Door43FileUploader.removeListItems(ulFiles, 'li.obsvrs-draggable', filesToRemove);
         }
+
+        jQuery('#obsvrs-page-list-div').height(ulPages.height());
     }
 
     private static addPlaceHolders(ulFiles: JQuery, numberToAdd: number): void {
@@ -248,16 +282,11 @@ class Door43FileUploader {
         }
     }
 
-    private static replacePlaceHolders(ul: JQuery, placeHolderSelector: string, numberToReplace: number, finalListLength: number): void {
+    private static replacePlaceHolders(ul: JQuery, placeHolderSelector: string, finalListLength: number): void {
 
         var placeHolders: JQuery = ul.children(placeHolderSelector);
-
-        for (var count: number = 0; count < numberToReplace; count++) {
-            var file = ul.find('li').eq(finalListLength);
-            var placeHolder = jQuery(placeHolders[count]);
-            file.insertBefore(placeHolder);
-            placeHolder.remove();
-        }
+        placeHolders.remove();
+        Door43FileUploader.addPlaceHolders(ul, finalListLength - ul.children().length);
     }
 }
 

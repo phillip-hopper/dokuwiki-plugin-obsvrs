@@ -24,7 +24,27 @@ interface LanguageDetail {
 interface LanguageList {
     count: number;
     results: LanguageDetail[];
+}
 
+interface ObsFrame {
+    id: string;
+    img: string;
+    text: string;
+}
+
+interface ObsChapter {
+    frames: ObsFrame[];
+    number: string; // '01'
+    ref: string; // 'A Bible story from: Genesis 1-2'
+    title: string; // '1. The Creation'
+}
+
+interface ObsChapterData {
+    app_words: Object;
+    chapters: ObsChapter[];
+    date_modified: string; // '20141207'
+    direction: string; // 'ltr', 'rtl'
+    language: string; // 'en'
 }
 
 // these variables are defined by Dokuwiki
