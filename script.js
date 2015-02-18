@@ -153,22 +153,25 @@ var Door43FileUploader = (function () {
             data: dataValues
         };
         jQuery.ajax(ajaxSettings).done(function (data) {
+            // remember for images in showFrames()
+            door43FileUploader.chapters = data.chapters;
             var select = jQuery('#obsvrs-select-chapter');
             for (var i = 0; i < data.chapters.length; i++) {
                 var chapter = data.chapters[i];
                 select.append('<option value="' + chapter.number + ':' + chapter.frames.length + '">' + chapter.title + '</option>');
             }
             select.on('change', function () {
-                Door43FileUploader.showChapters(this.value);
+                Door43FileUploader.showFrames(this.value);
             });
         });
     };
-    Door43FileUploader.showChapters = function (chapterData) {
+    Door43FileUploader.showFrames = function (chapterData) {
         var values = chapterData.split(':');
         var ul = jQuery('#obsvrs-pages');
         ul.empty();
         for (var i = 1; i < parseInt(values[1]); i++) {
-            ul.append('<li>' + Door43FileUploader.formatPageNumber(i) + '</li>');
+            var imgUrl = DOKU_BASE + 'doku.php?do=obsvrs_frame_thumbnail&img=' + door43FileUploader.chapters[parseInt(values[0]) - 1]['frames'][i - 1]['img'];
+            ul.append('<li><img src="' + imgUrl + '">' + Door43FileUploader.formatPageNumber(i) + '</li>');
         }
         Door43FileUploader.padFileList();
     };

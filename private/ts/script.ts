@@ -19,6 +19,7 @@ class Door43FileUploader {
 
     private sortTimer: number = 0;
     private userName: string;
+    private chapters: Object[];
 
     /**
      * Class constructor
@@ -191,6 +192,9 @@ class Door43FileUploader {
 
         jQuery.ajax(ajaxSettings).done(function (data: ObsChapterData) {
 
+            // remember for images in showFrames()
+            door43FileUploader.chapters = data.chapters;
+
             var select = jQuery('#obsvrs-select-chapter');
             for (var i = 0; i < data.chapters.length; i++) {
 
@@ -198,18 +202,20 @@ class Door43FileUploader {
                 select.append('<option value="' + chapter.number + ':' + chapter.frames.length + '">' + chapter.title + '</option>');
             }
 
-            select.on('change', function() { Door43FileUploader.showChapters(this.value); })
+            select.on('change', function() { Door43FileUploader.showFrames(this.value); })
         });
     }
 
-    static showChapters(chapterData: string) {
+    static showFrames(chapterData: string) {
 
         var values = chapterData.split(':');
         var ul = jQuery('#obsvrs-pages');
         ul.empty();
 
         for (var i = 1; i < parseInt(values[1]); i++) {
-            ul.append('<li>' + Door43FileUploader.formatPageNumber(i) + '</li>')
+            var imgUrl: string = DOKU_BASE + 'doku.php?do=obsvrs_frame_thumbnail&img='
+                + door43FileUploader.chapters[parseInt(values[0]) - 1]['frames'][i - 1]['img'];
+            ul.append('<li><img src="' + imgUrl + '">' + Door43FileUploader.formatPageNumber(i) + '</li>')
         }
 
         Door43FileUploader.padFileList();
