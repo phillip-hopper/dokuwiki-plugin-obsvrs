@@ -156,8 +156,8 @@ var Door43FileUploader = (function () {
             // remember for images in showFrames()
             door43FileUploader.chapters = data.chapters;
             var select = jQuery('#obsvrs-select-chapter');
-            for (var i = 0; i < data.chapters.length; i++) {
-                var chapter = data.chapters[i];
+            for (var i = 0; i < door43FileUploader.chapters.length; i++) {
+                var chapter = door43FileUploader.chapters[i];
                 select.append('<option value="' + chapter.number + ':' + chapter.frames.length + '">' + chapter.title + '</option>');
             }
             select.on('change', function () {

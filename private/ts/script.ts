@@ -19,7 +19,7 @@ class Door43FileUploader {
 
     private sortTimer: number = 0;
     private userName: string;
-    private chapters: Object[];
+    private chapters: ObsChapter[];
 
     /**
      * Class constructor
@@ -196,9 +196,9 @@ class Door43FileUploader {
             door43FileUploader.chapters = data.chapters;
 
             var select = jQuery('#obsvrs-select-chapter');
-            for (var i = 0; i < data.chapters.length; i++) {
+            for (var i = 0; i < door43FileUploader.chapters.length; i++) {
 
-                var chapter: ObsChapter = data.chapters[i];
+                var chapter: ObsChapter = door43FileUploader.chapters[i];
                 select.append('<option value="' + chapter.number + ':' + chapter.frames.length + '">' + chapter.title + '</option>');
             }
 
