@@ -1,2 +1,2 @@
-dokuwiki-plugin-obs-vrs
-=======================
+dokuwiki-plugin-obs-audio-upload
+================================
