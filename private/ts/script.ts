@@ -212,7 +212,7 @@ class Door43FileUploader {
         var ul = jQuery('#obsaudioupload-pages');
         ul.empty();
 
-        for (var i = 1; i < parseInt(values[1]); i++) {
+        for (var i = 1; i <= parseInt(values[1]); i++) {
             var imgUrl: string = DOKU_BASE + 'doku.php?do=obsaudioupload_frame_thumbnail&img='
                 + door43FileUploader.chapters[parseInt(values[0]) - 1]['frames'][i - 1]['img'];
             ul.append('<li><img src="' + imgUrl + '">' + Door43FileUploader.formatPageNumber(i) + '</li>')
