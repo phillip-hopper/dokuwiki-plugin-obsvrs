@@ -1,7 +1,7 @@
 <?php
 /**
  * Name: lang.php
- * Description: The English language localization file for door43obsvrs plugin.
+ * Description: The English language localization file for door43obsaudioupload plugin.
  *
  * Author: Phil Hopper
  * Date:   2014-12-31
@@ -20,7 +20,7 @@ $lang['selectChapter'] = 'Select Chapter';
 $lang['loginRequired'] = 'You must be logged in before you can upload files.';
 
 // localized strings for JavaScript
-// js example: var text = LANG.plugins['door43obsvrs']['autoRetryNote'];
+// js example: var text = LANG.plugins['door43obsaudioupload']['autoRetryNote'];
 $lang['js']['autoRetryNote'] = 'Retrying {retryNum}/{maxAuto} ...';
 $lang['js']['failUpload'] = 'Upload failed';
 $lang['js']['formatProgress'] = '{percent}% of {total_size}';

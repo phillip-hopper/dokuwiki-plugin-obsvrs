@@ -1,12 +1,12 @@
 <?php
 /**
  * Name: general.test.php
- * Description: General tests for the door43obsvrs plugin.
+ * Description: General tests for the door43obsaudioupload plugin.
  *
  * Author: Phil Hopper
  * Date:   2014-12-31
  */
-class general_plugin_door43obsvrs_test extends DokuWikiTest {
+class general_plugin_door43obsaudioupload_test extends DokuWikiTest {
 
     /**
      * Simple test to make sure the plugin.info.txt is in correct format
@@ -25,7 +25,7 @@ class general_plugin_door43obsvrs_test extends DokuWikiTest {
         $this->assertArrayHasKey('desc', $info);
         $this->assertArrayHasKey('url', $info);
 
-        $this->assertEquals('door43obsvrs', $info['base']);
+        $this->assertEquals('door43obsaudioupload', $info['base']);
         $this->assertRegExp('/^https?:\/\//', $info['url']);
         $this->assertTrue(mail_isvalid($info['email']));
         $this->assertRegExp('/^\d\d\d\d-\d\d-\d\d$/', $info['date']);

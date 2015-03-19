@@ -10,7 +10,7 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
-class action_plugin_door43obsvrs_GetBucketConfig extends DokuWiki_Action_Plugin {
+class action_plugin_door43obsaudioupload_GetBucketConfig extends DokuWiki_Action_Plugin {
 
     /**
      * Registers a callback function for a given event
@@ -33,7 +33,7 @@ class action_plugin_door43obsvrs_GetBucketConfig extends DokuWiki_Action_Plugin 
      */
     public function handle_ajax_call_unknown(Doku_Event &$event, $param) {
 
-        if ($event->data !== 'obsvrs_bucket_config_request') return;
+        if ($event->data !== 'obsaudioupload_bucket_config_request') return;
 
         //no other ajax call handlers needed
         $event->stopPropagation();
@@ -60,7 +60,7 @@ class action_plugin_door43obsvrs_GetBucketConfig extends DokuWiki_Action_Plugin 
      */
     public function handle_do_action(Doku_Event &$event, $param) {
 
-        if ($event->data !== 'obsvrs_signature_request') return;
+        if ($event->data !== 'obsaudioupload_signature_request') return;
 
         //no other ajax call handlers needed
         $event->stopPropagation();

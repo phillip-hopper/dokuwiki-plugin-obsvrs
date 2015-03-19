@@ -10,7 +10,7 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
-class Door43obsvrs_Plugin_Base extends DokuWiki_Syntax_Plugin {
+class Door43obsaudioupload_Plugin_Base extends DokuWiki_Syntax_Plugin {
 
     protected $specialMatch;
     protected $entryMatch;
@@ -22,7 +22,7 @@ class Door43obsvrs_Plugin_Base extends DokuWiki_Syntax_Plugin {
     function __construct($pluginName, $tagName, $templateFileName) {
 
         $this->root = dirname(dirname(__FILE__));
-        $this->newMode = "plugin_door43obsvrs_{$pluginName}";
+        $this->newMode = "plugin_door43obsaudioupload_{$pluginName}";
         $this->specialMatch = "\\[{$tagName}/\\]";
         $this->entryMatch = "\\[{$tagName}\\]";
         $this->exitMatch = "\\[/{$tagName}\\]";

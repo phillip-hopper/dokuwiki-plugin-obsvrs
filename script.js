@@ -22,7 +22,7 @@ var Door43FileUploader = (function () {
     Door43FileUploader.prototype.getUserInfo = function (self) {
         var url = DOKU_BASE + 'lib/exe/ajax.php';
         var dataValues = {
-            call: 'obsvrs_user_info_request'
+            call: 'obsaudioupload_user_info_request'
         };
         var ajaxSettings = {
             type: 'POST',
@@ -31,11 +31,11 @@ var Door43FileUploader = (function () {
         };
         jQuery.ajax(ajaxSettings).done(function (data) {
             if (!data['name']) {
-                jQuery('.obsvrs-not-logged-in').css('display', 'block');
+                jQuery('.obsaudioupload-not-logged-in').css('display', 'block');
             }
             else {
                 self.userName = data['name'];
-                jQuery('.obsvrs-logged-in').css('display', 'block');
+                jQuery('.obsaudioupload-logged-in').css('display', 'block');
                 self.getBucketConfig(self);
             }
         });
@@ -43,7 +43,7 @@ var Door43FileUploader = (function () {
     Door43FileUploader.prototype.getBucketConfig = function (self) {
         var url = DOKU_BASE + 'lib/exe/ajax.php';
         var dataValues = {
-            call: 'obsvrs_bucket_config_request'
+            call: 'obsaudioupload_bucket_config_request'
         };
         var ajaxSettings = {
             type: 'POST',
@@ -55,7 +55,7 @@ var Door43FileUploader = (function () {
         });
     };
     Door43FileUploader.prototype.initUploader = function (self, bucketInfo) {
-        var sigEndpoint = DOKU_BASE + 'doku.php?do=obsvrs_signature_request';
+        var sigEndpoint = DOKU_BASE + 'doku.php?do=obsaudioupload_signature_request';
         self.uploader = jQuery('#obs-fine-uploader').fineUploaderS3({
             debug: false,
             maxConnections: 1,
@@ -70,19 +70,19 @@ var Door43FileUploader = (function () {
                 enableAuto: true,
                 showButton: true,
                 showAutoRetryNote: true,
-                autoRetryNote: LANG.plugins['door43obsvrs']['autoRetryNote']
+                autoRetryNote: LANG.plugins['door43obsaudioupload']['autoRetryNote']
             },
             text: {
-                failUpload: LANG.plugins['door43obsvrs']['failUpload'],
-                formatProgress: LANG.plugins['door43obsvrs']['formatProgress'],
-                paused: LANG.plugins['door43obsvrs']['paused'],
-                waitingForResponse: LANG.plugins['door43obsvrs']['waitingForResponse']
+                failUpload: LANG.plugins['door43obsaudioupload']['failUpload'],
+                formatProgress: LANG.plugins['door43obsaudioupload']['formatProgress'],
+                paused: LANG.plugins['door43obsaudioupload']['paused'],
+                waitingForResponse: LANG.plugins['door43obsaudioupload']['waitingForResponse']
             },
             template: "qq-template",
             autoUpload: false,
             validation: { allowedExtensions: ['mp3', 'wav'] },
             editFilename: { enabled: false },
-            button: document.getElementById('obsvrs-selectButton')
+            button: document.getElementById('obsaudioupload-selectButton')
         });
         // self.uploader.on('statusChange', function(event: Event, id: number, oldStatus: string, newStatus: string) {
         self.uploader.on('statusChange', function () {
@@ -91,7 +91,7 @@ var Door43FileUploader = (function () {
             // the list is padded.
             self.delayPadFileList();
         });
-        self.sorting = jQuery('.obsvrs-sortable').sortable({
+        self.sorting = jQuery('.obsaudioupload-sortable').sortable({
             start: function () {
                 this.style.cursor = 'move';
             },
@@ -99,14 +99,14 @@ var Door43FileUploader = (function () {
                 this.style.cursor = '';
             }
         });
-        jQuery('#obsvrs-uploadButton').on('click', function () {
+        jQuery('#obsaudioupload-uploadButton').on('click', function () {
             self.sorting.sortable('disable');
             Door43FileUploader.uploadNow(self);
         });
         Door43FileUploader.initializeChapters();
     };
     Door43FileUploader.uploadNow = function (self) {
-        var langText = document.getElementById('obsvrs-selectLanguageCode').value;
+        var langText = document.getElementById('obsaudioupload-selectLanguageCode').value;
         if (!langText)
             return;
         var langCodes = langText.match(/\(([a-z]+)\)/i);
@@ -116,11 +116,11 @@ var Door43FileUploader = (function () {
         var userNames = userText.match(/\((.+)\)/i);
         if (userNames.length !== 2)
             return;
-        var chapterVerses = jQuery('#obsvrs-select-chapter').val();
+        var chapterVerses = jQuery('#obsaudioupload-select-chapter').val();
         if (!chapterVerses)
             return;
         var chapter = chapterVerses.split(':')[0];
-        var ulFiles = jQuery('#obsvrs-files');
+        var ulFiles = jQuery('#obsaudioupload-files');
         var allItems = ulFiles.find('li');
         var items = ulFiles.find('[qq-file-id]');
         // target directory
@@ -155,7 +155,7 @@ var Door43FileUploader = (function () {
         jQuery.ajax(ajaxSettings).done(function (data) {
             // remember for images in showFrames()
             door43FileUploader.chapters = data.chapters;
-            var select = jQuery('#obsvrs-select-chapter');
+            var select = jQuery('#obsaudioupload-select-chapter');
             for (var i = 0; i < door43FileUploader.chapters.length; i++) {
                 var chapter = door43FileUploader.chapters[i];
                 select.append('<option value="' + chapter.number + ':' + chapter.frames.length + '">' + chapter.title + '</option>');
@@ -167,10 +167,10 @@ var Door43FileUploader = (function () {
     };
     Door43FileUploader.showFrames = function (chapterData) {
         var values = chapterData.split(':');
-        var ul = jQuery('#obsvrs-pages');
+        var ul = jQuery('#obsaudioupload-pages');
         ul.empty();
         for (var i = 1; i < parseInt(values[1]); i++) {
-            var imgUrl = DOKU_BASE + 'doku.php?do=obsvrs_frame_thumbnail&img=' + door43FileUploader.chapters[parseInt(values[0]) - 1]['frames'][i - 1]['img'];
+            var imgUrl = DOKU_BASE + 'doku.php?do=obsaudioupload_frame_thumbnail&img=' + door43FileUploader.chapters[parseInt(values[0]) - 1]['frames'][i - 1]['img'];
             ul.append('<li><img src="' + imgUrl + '">' + Door43FileUploader.formatPageNumber(i) + '</li>');
         }
         Door43FileUploader.padFileList();
@@ -188,11 +188,11 @@ var Door43FileUploader = (function () {
      * Ensures the file list is the same length as the chapter list
      */
     Door43FileUploader.padFileList = function () {
-        var ulFiles = jQuery('#obsvrs-files');
-        var ulPages = jQuery('#obsvrs-pages');
+        var ulFiles = jQuery('#obsaudioupload-files');
+        var ulPages = jQuery('#obsaudioupload-pages');
         var numPages = ulPages.children('li').length;
         var numFiles = ulFiles.children('li').length;
-        var numPlaceHolders = ulFiles.children('li.obsvrs-placeholder').length;
+        var numPlaceHolders = ulFiles.children('li.obsaudioupload-placeholder').length;
         if (numPages > numFiles) {
             // add more place holders
             Door43FileUploader.addPlaceHolders(ulFiles, numPages - numFiles);
@@ -204,15 +204,15 @@ var Door43FileUploader = (function () {
             toRemove -= placeHoldersToRemove;
             var filesToRemove = (toRemove > 0) ? toRemove : 0;
             if (placeHoldersToRemove > 0)
-                Door43FileUploader.replacePlaceHolders(ulFiles, 'li.obsvrs-placeholder', numPages);
+                Door43FileUploader.replacePlaceHolders(ulFiles, 'li.obsaudioupload-placeholder', numPages);
             if (filesToRemove > 0)
-                Door43FileUploader.removeListItems(ulFiles, 'li.obsvrs-draggable', filesToRemove);
+                Door43FileUploader.removeListItems(ulFiles, 'li.obsaudioupload-draggable', filesToRemove);
         }
-        jQuery('#obsvrs-page-list-div').height(ulPages.height());
+        jQuery('#obsaudioupload-page-list-div').height(ulPages.height());
     };
     Door43FileUploader.addPlaceHolders = function (ulFiles, numberToAdd) {
         for (var i = 0; i < numberToAdd; i++) {
-            ulFiles.append('<li class="obsvrs-placeholder">&nbsp;</li>');
+            ulFiles.append('<li class="obsaudioupload-placeholder">&nbsp;</li>');
         }
     };
     Door43FileUploader.removeListItems = function (ul, selector, numberToRemove) {

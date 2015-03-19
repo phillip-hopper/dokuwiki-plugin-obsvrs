@@ -10,7 +10,7 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
-class action_plugin_door43obsvrs_GetThumbnails extends DokuWiki_Action_Plugin {
+class action_plugin_door43obsaudioupload_GetThumbnails extends DokuWiki_Action_Plugin {
 
     /**
      * Registers a callback function for a given event
@@ -32,7 +32,7 @@ class action_plugin_door43obsvrs_GetThumbnails extends DokuWiki_Action_Plugin {
      */
     public function handle_do_action(Doku_Event &$event, $param) {
 
-        if ($event->data !== 'obsvrs_frame_thumbnail') return;
+        if ($event->data !== 'obsaudioupload_frame_thumbnail') return;
 
         //no other ajax call handlers needed
         $event->stopPropagation();

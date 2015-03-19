@@ -10,7 +10,7 @@
 <script type="text/template" id="qq-template">
     <div class="qq-uploader-selector qq-uploader">
         <div style="float: left; margin-bottom: 8px;">
-            <select id="obsvrs-select-chapter">
+            <select id="obsaudioupload-select-chapter">
                 <option value="" selected="selected" disabled="disabled">@selectChapter@</option>
             </select>
         </div>
@@ -22,30 +22,30 @@
             <span>@processingFiles@</span>
             <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
         </span>
-        <div id="obsvrs-page-list-div" style="overflow: hidden;">
-            <ul id="obsvrs-pages" style="float: left; padding-right: 4px; clear: both;" class="qq-upload-list">
+        <div id="obsaudioupload-page-list-div" style="overflow: hidden;">
+            <ul id="obsaudioupload-pages" style="float: left; padding-right: 4px; clear: both;" class="qq-upload-list">
             </ul>
-            <ul id="obsvrs-files" style="overflow: auto;" class="obsvrs-sortable qq-upload-list-selector qq-upload-list">
-                <li class="obsvrs-draggable">
+            <ul id="obsaudioupload-files" style="overflow: auto;" class="obsaudioupload-sortable qq-upload-list-selector qq-upload-list">
+                <li class="obsaudioupload-draggable">
                     <div class="qq-progress-bar-container-selector">
                         <div class="qq-progress-bar-selector qq-progress-bar"></div>
                     </div>
                     <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
                     <span class="qq-upload-file-selector qq-upload-file"></span>
                     <span class="qq-upload-size-selector qq-upload-size"></span>
-                    <span class="obsvrs-remove qq-upload-cancel-selector qq-upload-cancel" title="Remove">&#x2717;</span>
+                    <span class="obsaudioupload-remove qq-upload-cancel-selector qq-upload-cancel" title="Remove">&#x2717;</span>
                     <span class="qq-upload-status-text-selector qq-upload-status-text"></span>
                 </li>
             </ul>
         </div>
     </div>
 </script>
-<div class="obsvrs-not-logged-in" style="display: none;">
-    <p class="obsvrs-error">@loginRequired@</p>
+<div class="obsaudioupload-not-logged-in" style="display: none;">
+    <p class="obsaudioupload-error">@loginRequired@</p>
 </div>
-<div class="obsvrs-logged-in" style="display: none; box-sizing: border-box; width: 100%; text-align: right;">
+<div class="obsaudioupload-logged-in" style="display: none; box-sizing: border-box; width: 100%; text-align: right;">
     <div style="margin-bottom: 8px;"><!-- insert language selector here --></div>
-    <div id="obsvrs-selectButton"><button>@selectFiles@</button></div>
-    <div style="margin-top: 8px;"><button id="obsvrs-uploadButton">@uploadFiles@</button></div>
+    <div id="obsaudioupload-selectButton"><button>@selectFiles@</button></div>
+    <div style="margin-top: 8px;"><button id="obsaudioupload-uploadButton">@uploadFiles@</button></div>
 </div>
 <div style="margin-top: 8px;" id="obs-fine-uploader"></div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * Name: metadata.php
- * Description: Options for the door43obsvrs plugin.
+ * Description: Options for the door43obsaudioupload plugin.
  *
  * Author: Phil Hopper
  * Date:   2014-12-31
