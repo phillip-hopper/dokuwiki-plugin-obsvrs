@@ -104,7 +104,7 @@ class Door43FileUploader {
             },
             template: "qq-template",
             autoUpload: false,
-            validation: { allowedExtensions: ['mp3', 'wav'] },
+            validation: { allowedExtensions: ['mp3'] },
             editFilename: { enabled: false },
             button: document.getElementById('obsaudioupload-selectButton')
         });
