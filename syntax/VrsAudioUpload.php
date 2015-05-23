@@ -10,13 +10,18 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
-$root = dirname(dirname(__FILE__));
-require_once $root . '/private/php/plugin_base.php';
+// $door43shared is a global instance, and can be used by any of the door43 plugins
+if (empty($door43shared)) {
+    $door43shared = plugin_load('helper', 'door43shared');
+}
 
-class syntax_plugin_door43obsaudioupload_VrsAudioUpload extends Door43obsaudioupload_Plugin_Base {
+/* @var $door43shared helper_plugin_door43shared */
+$door43shared->loadPluginBase();
+
+class syntax_plugin_door43obsaudioupload_VrsAudioUpload extends Door43_Syntax_Plugin {
 
     function __construct() {
-        parent::__construct('VrsAudioUpload', 'obsvrsaudioupload', 'vrs_audio_upload.html');
+        parent::__construct('obsvrsaudioupload', 'vrs_audio_upload.html');
     }
 
     protected function getTextToRender($match) {

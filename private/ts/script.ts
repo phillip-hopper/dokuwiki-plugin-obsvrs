@@ -179,7 +179,7 @@ class Door43FileUploader {
         var url = DOKU_BASE + 'lib/exe/ajax.php';
 
         var dataValues = {
-            call: 'obs_cross_origin_json_request',
+            call: 'cross_origin_request',
             contentType: 'application/json',
             requestUrl: 'https://api.unfoldingword.org/obs/txt/1/en/obs-en.json'
         };
