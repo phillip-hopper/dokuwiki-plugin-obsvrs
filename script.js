@@ -80,7 +80,7 @@ var Door43FileUploader = (function () {
             },
             template: "qq-template",
             autoUpload: false,
-            validation: { allowedExtensions: ['mp3', 'wav'] },
+            validation: { allowedExtensions: ['mp3'] },
             editFilename: { enabled: false },
             button: document.getElementById('obsaudioupload-selectButton')
         });
