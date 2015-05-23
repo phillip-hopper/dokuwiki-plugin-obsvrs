@@ -10,6 +10,14 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
+// $door43shared is a global instance, and can be used by any of the door43 plugins
+if (empty($door43shared)) {
+    $door43shared = plugin_load('helper', 'door43shared');
+}
+
+/* @var $door43shared helper_plugin_door43shared */
+$door43shared->loadAjaxHelper();
+
 class action_plugin_door43obsaudioupload_GetUserInfo extends DokuWiki_Action_Plugin {
 
     /**
@@ -19,24 +27,10 @@ class action_plugin_door43obsaudioupload_GetUserInfo extends DokuWiki_Action_Plu
      * @return void
      */
     public function register(Doku_Event_Handler $controller) {
-        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call_unknown');
+        Door43_Ajax_Helper::register_handler($controller, 'obsaudioupload_user_info_request', array($this, 'handle_ajax_call'));
     }
 
-    /**
-     * Gets the logged in user info
-     *
-     * @param Doku_Event $event  event object by reference
-     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
-     *                           handler was registered]
-     * @return void
-     */
-    public function handle_ajax_call_unknown(Doku_Event &$event, $param) {
-
-        if ($event->data !== 'obsaudioupload_user_info_request') return;
-
-        //no other ajax call handlers needed
-        $event->stopPropagation();
-        $event->preventDefault();
+    public function handle_ajax_call() {
 
         // read the config file
         $userInfo = $GLOBALS['USERINFO'];
